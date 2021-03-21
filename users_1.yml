@@ -1,0 +1,39 @@
+---
+- hosts: all 
+  remote_user: pawel 
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  connection: ssh
+  tasks:
+   - name: Add group "office" to remote server
+     group:
+       name: office
+       gid: 2010
+       state: present
+
+   - name: Add user "ANSIBLETEST" to remote server
+     user:
+       name: ansibletest
+       comment: "Accountant UnPrivileged User"
+       uid: 2002
+       group: office
+       shell: /bin/bash
+       generate_ssh_key: yes
+       ssh_key_bits: 2048
+       ssh_key_file: .ssh/id_rsa
+
+   - name: Add user "ANSIBLE2" to remote server
+     user:
+       name: ansible2
+       comment: "Content creator UnPrivileged User"
+       uid: 2003
+       group: office
+       shell: /bin/bash
+       generate_ssh_key: yes
+       ssh_key_bits: 2048
+       ssh_key_file: .ssh/id_rsa
+
+   - name: Force user "ansible2" to change the password
+     command: 
+         chage -d 0 ansible2
